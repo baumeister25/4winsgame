@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import './Board.css';
 import ValidationService from '../../services/WinValidationService';
 
@@ -16,8 +17,6 @@ class Board extends React.Component {
     super(props);
     this.state = {
       board: new Array(6).fill(new Array(7).fill(null)),
-      activePlayer: 'X',
-      won: false,
     };
   }
 
@@ -28,16 +27,17 @@ class Board extends React.Component {
    * @param {number} colIndex The column that was clicked on.
    */
   handleColumnClick(colIndex) {
-    if (this.state.won) {
+    if (this.props.won) {
       return;
     }
     for (let row = this.state.board.length - 1; row >= 0; row--) {
       if (!this.state.board[row][colIndex]) {
         const newField = this.state.board.map((col) => col.slice()).slice();
-        newField[row][colIndex] = this.state.activePlayer;
-        const nextPlayer = this.state.activePlayer === 'X' ? 'O': 'X';
-        this.setState({board: newField, activePlayer: nextPlayer,
-          won: ValidationService.checkWin(row, colIndex, newField)});
+        newField[row][colIndex] = this.props.player;
+        const won= ValidationService.checkWin(row, colIndex, newField);
+
+        this.setState({board: newField});
+        this.props.onMoveFinished({won: won});
         return;
       }
     }
@@ -62,5 +62,10 @@ class Board extends React.Component {
   }
 }
 
+Board.propTypes = {
+  player: PropTypes.string,
+  won: PropTypes.bool,
+  onMoveFinished: PropTypes.func,
+};
 export default Board;
 
