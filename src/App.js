@@ -1,31 +1,50 @@
-import React, {useState} from 'react';
+import React from 'react';
 import Board from './components/board/Board.js';
 import Header from './components/header/Header.js';
 
 /**
  * Base component of the 4 Wins Game Application
- * @return {Object} React Elements that create the application
  */
-function App() {
-  const [currentPlayer, setCurrentPlayer] = useState('X');
-  const [won, setWon] = useState(false);
+class App extends React.Component {
+  /**
+   * Constructor of App component
+   * @param {Object} props Properties for the App component
+   */
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentPlayer: 'X',
+      won: false,
+    };
+  }
 
-  const onMoveFinished = (event) => {
+  /**
+   * Handler method for the move finished event.
+   * The event is thrown whenever a player finishes a move.
+   * @param {Object} event The event containing the information
+   *        whether the last move won the game
+   */
+  onMoveFinished(event) {
     if (event.won) {
-      setWon(true);
+      this.setState({won: true});
     } else {
-      setCurrentPlayer( currentPlayer === 'X' ? 'O': 'X' );
+      this.setState( {currentPlayer:
+          this.state.currentPlayer === 'X' ? 'O': 'X'});
     }
-  };
+  }
 
-  return (
-    <div>
-      <Header player={currentPlayer} won={won} />
-      <Board player={currentPlayer}
-        won={won}
-        onMoveFinished={(e)=>onMoveFinished(e)} />
+  /**
+   * @inheritDoc
+   */
+  render() {
+    return (<div>
+      <Header player={this.state.currentPlayer} won={this.state.won} />
+      <Board player={this.state.currentPlayer}
+        won={this.state.won}
+        onMoveFinished={(e)=>this.onMoveFinished(e)} />
     </div>
-  );
+    );
+  }
 }
 
 export default App;
